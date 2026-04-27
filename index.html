@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Birthday Quiz · Who Knows Me Best?</title>
+<title>Who Knows Tate Best?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #1a0d1f;
-    --bg-2: #2d1438;
     --paper: #fdf6e8;
     --ink: #2a1810;
     --pink: #ff4d8d;
@@ -18,6 +17,11 @@
     --teal: #4dd4c4;
     --purple: #a855f7;
     --red: #ff5757;
+    --green: #4ade80;
+    --opt-a: #e63946;
+    --opt-b: #2563eb;
+    --opt-c: #f59e0b;
+    --opt-d: #16a34a;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,7 +38,6 @@
     overflow-x: hidden;
   }
 
-  /* Floating background sparkles */
   .bg-sparkle {
     position: fixed;
     pointer-events: none;
@@ -54,18 +57,22 @@
   }
 
   .container {
-    max-width: 720px;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 40px 24px 80px;
+    padding: 32px 20px 60px;
     position: relative;
     z-index: 1;
   }
 
-  /* ============== HEADER ============== */
-  header {
-    text-align: center;
-    margin-bottom: 40px;
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeIn 0.4s ease-out; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
+
+  .start-screen { text-align: center; padding-top: 40px; }
 
   .eyebrow {
     font-family: 'DM Mono', monospace;
@@ -75,7 +82,6 @@
     color: var(--gold);
     margin-bottom: 16px;
   }
-
   .eyebrow::before, .eyebrow::after {
     content: '✦';
     margin: 0 10px;
@@ -86,224 +92,253 @@
     font-family: 'Fraunces', serif;
     font-weight: 900;
     font-style: italic;
-    font-size: clamp(48px, 9vw, 88px);
+    font-size: clamp(56px, 11vw, 110px);
     line-height: 0.92;
     letter-spacing: -0.03em;
   }
-
   h1 .highlight {
     color: var(--pink);
     font-style: normal;
     display: inline-block;
     transform: rotate(-3deg);
-    text-shadow: 4px 4px 0 var(--gold);
+    text-shadow: 5px 5px 0 var(--gold);
+  }
+  h1 .highlight2 {
+    color: var(--gold);
+    font-style: normal;
+    display: inline-block;
+    transform: rotate(2deg);
+    text-shadow: 5px 5px 0 var(--pink);
   }
 
   .subtitle {
     font-family: 'Caveat', cursive;
-    font-size: 24px;
-    margin-top: 16px;
+    font-size: 26px;
+    margin: 20px 0 36px;
     color: var(--paper);
-    opacity: 0.85;
+    opacity: 0.9;
   }
 
-  /* ============== CARD ============== */
-  .card {
+  .name-card {
     background: var(--paper);
     color: var(--ink);
     border-radius: 24px;
-    padding: 32px 28px;
-    margin-bottom: 20px;
-    box-shadow:
-      0 0 0 4px var(--ink),
-      8px 8px 0 0 var(--pink),
-      16px 16px 0 0 var(--gold);
-    position: relative;
+    padding: 28px 24px;
+    max-width: 460px;
+    margin: 0 auto;
+    box-shadow: 0 0 0 4px var(--ink), 8px 8px 0 var(--pink), 16px 16px 0 var(--gold);
+    text-align: left;
   }
 
-  .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 2px dashed var(--ink);
-  }
-
-  .card-title {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 900;
-    font-size: 28px;
-  }
-
-  .card-badge {
+  .name-label {
     font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    background: var(--ink);
-    color: var(--paper);
-    padding: 4px 10px;
-    border-radius: 4px;
+    font-size: 11px;
+    letter-spacing: 0.3em;
     text-transform: uppercase;
-  }
-
-  /* ============== INPUTS ============== */
-  .player-row {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    margin-bottom: 12px;
-    padding: 10px 12px;
-    background: #fff5;
-    border: 2px solid var(--ink);
-    border-radius: 12px;
-    transition: all 0.2s;
-  }
-
-  .player-row:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 4px 4px 0 var(--ink);
-  }
-
-  .player-num {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 900;
-    font-size: 22px;
-    color: var(--pink);
-    min-width: 28px;
-  }
-
-  .name-input {
-    flex: 1;
-    border: none;
-    background: transparent;
-    font-family: 'Fraunces', serif;
-    font-size: 18px;
-    color: var(--ink);
-    outline: none;
-    border-bottom: 2px solid transparent;
-    padding: 4px 0;
-  }
-
-  .name-input:focus {
-    border-bottom-color: var(--pink);
-  }
-
-  .name-input::placeholder {
-    color: #2a181066;
-    font-style: italic;
-  }
-
-  .score-input {
-    width: 72px;
-    border: 2px solid var(--ink);
-    border-radius: 8px;
-    background: var(--paper);
-    font-family: 'DM Mono', monospace;
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--ink);
-    text-align: center;
-    padding: 6px;
-    outline: none;
-  }
-
-  .score-input:focus {
-    background: var(--gold);
-  }
-
-  .score-suffix {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    color: var(--ink);
+    margin-bottom: 8px;
     opacity: 0.6;
   }
 
-  .remove-btn {
+  .name-input-big {
+    width: 100%;
     border: none;
     background: transparent;
-    color: var(--red);
-    font-size: 22px;
-    cursor: pointer;
-    padding: 4px 8px;
-    line-height: 1;
-    border-radius: 50%;
-    transition: all 0.2s;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--ink);
+    outline: none;
+    border-bottom: 3px solid var(--ink);
+    padding: 4px 0 8px;
   }
-
-  .remove-btn:hover {
-    background: var(--red);
-    color: var(--paper);
-    transform: rotate(90deg);
-  }
-
-  /* ============== BUTTONS ============== */
-  .btn-row {
-    display: flex;
-    gap: 12px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-  }
+  .name-input-big::placeholder { color: #2a181066; }
 
   .btn {
     font-family: 'DM Mono', monospace;
-    font-size: 13px;
+    font-size: 14px;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     font-weight: 500;
-    border: 2px solid var(--ink);
-    border-radius: 10px;
-    padding: 12px 20px;
+    border: 3px solid var(--ink);
+    border-radius: 12px;
+    padding: 14px 24px;
     cursor: pointer;
     transition: all 0.15s;
     background: var(--paper);
     color: var(--ink);
   }
+  .btn:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--ink); }
+  .btn:active { transform: translate(0,0); box-shadow: 0 0 0 var(--ink); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  .btn:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 4px 4px 0 var(--ink);
-  }
-
-  .btn:active {
-    transform: translate(0, 0);
-    box-shadow: 0 0 0 var(--ink);
-  }
-
-  .btn-add { background: var(--teal); }
-  .btn-reveal {
+  .btn-big {
+    font-size: 18px;
+    padding: 18px 36px;
     background: var(--pink);
     color: var(--paper);
-    flex: 1;
-    font-size: 16px;
-    padding: 16px 24px;
+    margin-top: 24px;
   }
-  .btn-reset {
-    background: transparent;
-    color: var(--paper);
-    border-color: var(--paper);
+
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
   }
-  .btn-reset:hover {
+
+  .player-tag {
+    font-family: 'Caveat', cursive;
+    font-size: 22px;
+    color: var(--gold);
+  }
+
+  .progress-info {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .progress-bar {
+    height: 8px;
+    background: #ffffff22;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--gold));
+    transition: width 0.4s ease-out;
+  }
+
+  .question-card {
     background: var(--paper);
     color: var(--ink);
-    box-shadow: 4px 4px 0 var(--pink);
-  }
-
-  /* ============== WINNER REVEAL ============== */
-  .winner-section {
-    display: none;
-    margin-top: 40px;
+    border-radius: 24px;
+    padding: 32px 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 0 0 4px var(--ink), 8px 8px 0 var(--pink);
     text-align: center;
-    animation: dropIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  .winner-section.show { display: block; }
+  .question-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 12px;
+  }
 
-  @keyframes dropIn {
-    0% { opacity: 0; transform: translateY(-40px) scale(0.9); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
+  .question-text {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: clamp(24px, 4vw, 32px);
+    line-height: 1.2;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .options-grid.tf { max-width: 600px; margin: 0 auto; }
+
+  .option-btn {
+    border: 3px solid var(--ink);
+    border-radius: 16px;
+    padding: 22px 18px;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--paper);
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 80px;
+    word-break: break-word;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .option-btn:disabled { cursor: not-allowed; }
+
+  .option-btn .icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.25);
+    border-radius: 8px;
+    border: 2px solid var(--paper);
+  }
+
+  .option-btn[data-color="a"] { background: var(--opt-a); }
+  .option-btn[data-color="b"] { background: var(--opt-b); }
+  .option-btn[data-color="c"] { background: var(--opt-c); }
+  .option-btn[data-color="d"] { background: var(--opt-d); }
+
+  .option-btn.correct {
+    background: var(--green) !important;
+    transform: scale(1.02);
+    box-shadow: 0 0 0 4px var(--gold);
+  }
+  .option-btn.wrong {
+    background: #6b6b6b !important;
+    opacity: 0.6;
+  }
+  .option-btn.selected-wrong {
+    background: var(--red) !important;
+    box-shadow: 0 0 0 4px var(--ink);
+  }
+
+  .options-grid.tf .option-btn {
+    justify-content: center;
+    text-align: center;
+    font-size: 28px;
+    min-height: 110px;
+    font-style: italic;
+  }
+  .options-grid.tf .option-btn .icon { display: none; }
+
+  .feedback {
+    text-align: center;
+    margin: 20px 0;
+    min-height: 40px;
+  }
+  .feedback-text {
+    font-family: 'Caveat', cursive;
+    font-size: 32px;
+    animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .feedback-text.right { color: var(--green); }
+  .feedback-text.wrong { color: var(--red); }
+
+  @keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .next-btn {
+    display: block;
+    margin: 16px auto 0;
+    background: var(--gold);
+    border-color: var(--ink);
   }
 
   .winner-eyebrow {
@@ -313,81 +348,84 @@
     margin-bottom: 8px;
     transform: rotate(-2deg);
     display: inline-block;
+    text-align: center;
+    width: 100%;
   }
 
-  .winner-name {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 900;
-    font-size: clamp(56px, 12vw, 120px);
-    line-height: 0.95;
-    color: var(--paper);
-    text-shadow:
-      4px 4px 0 var(--pink),
-      8px 8px 0 var(--purple);
-    margin: 16px 0;
-    word-break: break-word;
-    animation: wiggle 2s ease-in-out infinite;
-  }
-
-  @keyframes wiggle {
-    0%, 100% { transform: rotate(-1deg); }
-    50% { transform: rotate(1deg); }
-  }
-
-  .winner-score {
-    font-family: 'DM Mono', monospace;
-    font-size: 16px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
+  .final-score-card {
+    text-align: center;
     margin-bottom: 32px;
   }
 
-  .winner-score .big {
+  .you-got {
+    font-family: 'Caveat', cursive;
+    font-size: 30px;
+    color: var(--paper);
+    opacity: 0.9;
+  }
+
+  .big-score {
     font-family: 'Fraunces', serif;
     font-style: italic;
     font-weight: 900;
-    font-size: 48px;
+    font-size: clamp(80px, 18vw, 180px);
+    line-height: 0.95;
     color: var(--paper);
-    text-transform: none;
-    letter-spacing: 0;
-    display: inline-block;
-    margin: 0 6px;
+    text-shadow: 5px 5px 0 var(--pink), 10px 10px 0 var(--purple);
+    margin: 8px 0;
+  }
+  .big-score .total {
+    color: var(--gold);
+    font-size: 0.5em;
+    opacity: 0.8;
   }
 
-  /* ============== LEADERBOARD ============== */
+  .verdict {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: clamp(28px, 5vw, 40px);
+    color: var(--gold);
+    margin: 16px 0 24px;
+  }
+
   .leaderboard {
     background: var(--paper);
     color: var(--ink);
     border-radius: 24px;
-    padding: 24px;
-    text-align: left;
+    padding: 28px 24px;
     box-shadow: 0 0 0 4px var(--ink), 8px 8px 0 var(--gold);
+    margin-bottom: 24px;
   }
 
   .leaderboard-title {
     font-family: 'Fraunces', serif;
     font-style: italic;
     font-weight: 900;
-    font-size: 22px;
-    margin-bottom: 16px;
+    font-size: 24px;
     text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .leaderboard-sub {
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 20px;
   }
 
   .leader-row {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 10px 14px;
+    padding: 12px 14px;
     border-bottom: 1px dashed #2a181030;
-    animation: slideIn 0.5s ease-out backwards;
   }
-
-  @keyframes slideIn {
-    0% { opacity: 0; transform: translateX(-20px); }
-    100% { opacity: 1; transform: translateX(0); }
-  }
+  .leader-row:last-child { border-bottom: none; }
+  .leader-row.you { background: #ffc94d44; border-radius: 12px; }
 
   .leader-rank {
     font-family: 'Fraunces', serif;
@@ -397,10 +435,7 @@
     min-width: 36px;
     color: var(--ink);
   }
-
-  .leader-row:nth-child(2) .leader-rank { color: var(--pink); font-size: 36px; }
-  .leader-row:nth-child(3) .leader-rank { color: var(--gold); }
-  .leader-row:nth-child(4) .leader-rank { color: var(--teal); }
+  .leader-row:nth-child(2) .leader-rank { color: var(--pink); font-size: 38px; }
 
   .leader-name {
     flex: 1;
@@ -408,10 +443,11 @@
     font-size: 18px;
     font-weight: 700;
   }
+  .leader-medal { font-size: 24px; }
 
   .leader-score {
     font-family: 'DM Mono', monospace;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     background: var(--ink);
     color: var(--paper);
@@ -419,50 +455,33 @@
     border-radius: 6px;
   }
 
-  .leader-medal {
-    font-size: 24px;
+  .empty-leader {
+    text-align: center;
+    font-style: italic;
+    opacity: 0.5;
+    padding: 20px;
   }
 
-  /* ============== CONFETTI ============== */
+  .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
   #confetti-canvas {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     pointer-events: none;
     z-index: 100;
   }
 
-  /* ============== TIE MESSAGE ============== */
-  .tie-msg {
-    font-family: 'Caveat', cursive;
-    font-size: 28px;
-    color: var(--gold);
-    margin-top: 16px;
+  @media (max-width: 560px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .question-card { padding: 24px 20px; }
+    .option-btn { padding: 18px 16px; font-size: 16px; min-height: 72px; }
   }
-
-  /* ============== EMPTY STATE ============== */
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--ink);
-    opacity: 0.5;
-    font-style: italic;
-    font-size: 18px;
-  }
-
-  /* ============== FOOTER ============== */
-  footer {
-    text-align: center;
-    margin-top: 40px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    opacity: 0.5;
-  }
-  footer span { color: var(--pink); }
 </style>
 </head>
 <body>
@@ -475,170 +494,379 @@
 
 <canvas id="confetti-canvas"></canvas>
 
+<!--
+=========================================================
+   👇 EDIT YOUR QUIZ HERE — change questions, options,
+   and the `correct` index (which option is right).
+   For multiple choice: 0 = first option, 1 = second, etc.
+   For TRUE/FALSE: 0 = TRUE, 1 = FALSE
+=========================================================
+-->
+<script>
+const QUIZ = [
+  // ========== MULTIPLE CHOICE QUESTIONS ==========
+  {
+    type: 'mc',
+    question: "What is her full name?",
+    options: ["Option A — edit me", "Option B — edit me", "Option C — edit me", "Option D — edit me"],
+    correct: 0
+  },
+  {
+    type: 'mc',
+    question: "What is Tate's favourite colour?",
+    options: ["Pink", "Blue", "Green", "Purple"],
+    correct: 0
+  },
+  {
+    type: 'mc',
+    question: "Have I ever done something illegal?",
+    options: ["Yes — definitely", "No — never", "Only a tiny bit", "I plead the fifth"],
+    correct: 0
+  },
+  {
+    type: 'mc',
+    question: "How many tattoos does she have?",
+    options: ["1", "2", "3", "4 or more"],
+    correct: 0
+  },
+  {
+    type: 'mc',
+    question: "When did she get heartbroken? (Year)",
+    options: ["2021", "2022", "2023", "2024"],
+    correct: 0
+  },
+  {
+    type: 'mc',
+    question: "Who is my biggest \"Hear me out\"?",
+    options: ["Crush A — edit me", "Crush B — edit me", "Crush C — edit me", "Crush D — edit me"],
+    correct: 0
+  },
+  {
+    type: 'mc',
+    question: "If we pick a place to go out, where do I always want to go?",
+    options: ["Grahamstown", "Cape Town", "Joburg", "Durban"],
+    correct: 0
+  },
+  {
+    type: 'mc',
+    question: "What is the first thing she does when she wakes up?",
+    options: ["Check her phone", "Make coffee", "Stretch", "Hit snooze"],
+    correct: 0
+  },
+  {
+    type: 'mc',
+    question: "Name 2 of Tate's favourite musicians (pick the right pair)",
+    options: ["Pair A — edit me", "Pair B — edit me", "Pair C — edit me", "Pair D — edit me"],
+    correct: 0
+  },
+  {
+    type: 'mc',
+    question: "How old was I when I got my first kiss?",
+    options: ["12", "14", "16", "18"],
+    correct: 0
+  },
+  {
+    type: 'mc',
+    question: "How many siblings do I have?",
+    options: ["1", "2", "3", "4 or more"],
+    correct: 0
+  },
+
+  // ========== TRUE/FALSE QUESTIONS (0 = TRUE, 1 = FALSE) ==========
+  {
+    type: 'tf',
+    question: "When I was young, I lit my parents' bed on fire.",
+    correct: 0
+  },
+  {
+    type: 'tf',
+    question: "My first job out of university was a receptionist for a pharmacy.",
+    correct: 0
+  },
+  {
+    type: 'tf',
+    question: "I have only ever been drunk once.",
+    correct: 1
+  },
+  {
+    type: 'tf',
+    question: "The first dog my family ever owned was a dalmatian named Spotty.",
+    correct: 1
+  },
+  {
+    type: 'tf',
+    question: "I used to be a pretty good athlete and won a certificate for relay races.",
+    correct: 0
+  },
+  {
+    type: 'tf',
+    question: "I love movies so much I could watch them all day.",
+    correct: 0
+  },
+  {
+    type: 'tf',
+    question: "I am currently researching ways to deliver a drug used to treat worms… but I want to use it for cancer.",
+    correct: 0
+  },
+  {
+    type: 'tf',
+    question: "I am terrified of animals.",
+    correct: 1
+  },
+  {
+    type: 'tf',
+    question: "I love surprises.",
+    correct: 1
+  },
+  {
+    type: 'tf',
+    question: "I starred in a famous music video.",
+    correct: 0
+  }
+];
+</script>
+
 <div class="container">
 
-  <header>
+  <div class="screen active start-screen" id="screen-start">
     <div class="eyebrow">Birthday Edition</div>
-    <h1>who knows<br><span class="highlight">me best?</span></h1>
-    <div class="subtitle">~ score the quiz, crown the champion ~</div>
-  </header>
+    <h1>who knows<br><span class="highlight">tate</span> <span class="highlight2">best?</span></h1>
+    <div class="subtitle">~ a birthday quiz, take it & find out ~</div>
 
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">Players & Scores</div>
-      <div class="card-badge">Max 22 pts</div>
-    </div>
-    <div id="players"></div>
-    <div class="btn-row">
-      <button class="btn btn-add" onclick="addPlayer()">+ Add Player</button>
+    <div class="name-card">
+      <div class="name-label">Your Name</div>
+      <input type="text" class="name-input-big" id="player-name" placeholder="enter your name..." maxlength="30">
+      <button class="btn btn-big" id="start-btn" style="width: 100%;" onclick="startQuiz()">Start Quiz →</button>
     </div>
   </div>
 
-  <div class="btn-row">
-    <button class="btn btn-reveal" onclick="reveal()">🎉 Reveal the Winner</button>
-    <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+  <div class="screen" id="screen-quiz">
+    <div class="quiz-header">
+      <div class="player-tag" id="quiz-player">~ player ~</div>
+      <div class="progress-info" id="quiz-progress">Question 1 / 21</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: 0%"></div></div>
+
+    <div class="question-card">
+      <div class="question-num" id="question-num">Question 1</div>
+      <div class="question-text" id="question-text">—</div>
+    </div>
+
+    <div class="options-grid" id="options-grid"></div>
+
+    <div class="feedback" id="feedback"></div>
   </div>
 
-  <div class="winner-section" id="winner-section">
-    <div class="winner-eyebrow">and the winner is...</div>
-    <div class="winner-name" id="winner-name">—</div>
-    <div class="winner-score">with <span class="big" id="winner-score">0</span> out of 22 points!</div>
-    <div id="tie-msg"></div>
+  <div class="screen" id="screen-results">
+    <div class="winner-eyebrow">all done!</div>
+    <div class="final-score-card">
+      <div class="you-got">you got</div>
+      <div class="big-score"><span id="final-score">0</span><span class="total"> / 21</span></div>
+      <div class="verdict" id="verdict">—</div>
+    </div>
 
     <div class="leaderboard">
-      <div class="leaderboard-title">★ Final Leaderboard ★</div>
+      <div class="leaderboard-title">★ Leaderboard ★</div>
+      <div class="leaderboard-sub">who knows tate best</div>
       <div id="leaderboard-list"></div>
     </div>
-  </div>
 
-  <footer>
-    Made with <span>♥</span> for a special birthday
-  </footer>
+    <div class="actions">
+      <button class="btn" onclick="playAgain()">Play Again</button>
+      <button class="btn" onclick="clearLeaderboard()" style="background: transparent; color: var(--paper); border-color: var(--paper);">Clear Leaderboard</button>
+    </div>
+  </div>
 
 </div>
 
 <script>
-  // ============== STATE ==============
-  let players = [];
-  let nextId = 1;
+  let currentQ = 0;
+  let score = 0;
+  let playerName = '';
+  let answered = false;
+  let leaderboard = [];
 
-  // ============== PLAYER MANAGEMENT ==============
-  function addPlayer(name = '', score = '') {
-    const id = nextId++;
-    players.push({ id, name, score });
-    render();
-    // focus the new name input
-    setTimeout(() => {
-      const inputs = document.querySelectorAll('.name-input');
-      if (inputs.length) inputs[inputs.length - 1].focus();
-    }, 50);
-  }
+  document.getElementById('player-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startQuiz();
+  });
 
-  function removePlayer(id) {
-    players = players.filter(p => p.id !== id);
-    render();
-  }
-
-  function updateName(id, value) {
-    const p = players.find(p => p.id === id);
-    if (p) p.name = value;
-  }
-
-  function updateScore(id, value) {
-    const p = players.find(p => p.id === id);
-    if (p) {
-      // clamp 0-22
-      let n = parseInt(value, 10);
-      if (isNaN(n)) n = '';
-      else n = Math.max(0, Math.min(22, n));
-      p.score = n;
-    }
-  }
-
-  function render() {
-    const container = document.getElementById('players');
-    if (players.length === 0) {
-      container.innerHTML = '<div class="empty-state">add your first player below ↓</div>';
+  function startQuiz() {
+    const name = document.getElementById('player-name').value.trim();
+    if (!name) {
+      document.getElementById('player-name').focus();
       return;
     }
-    container.innerHTML = players.map((p, i) => `
-      <div class="player-row">
-        <span class="player-num">${i + 1}.</span>
-        <input type="text" class="name-input" placeholder="player name..."
-               value="${escapeHtml(p.name)}"
-               oninput="updateName(${p.id}, this.value)">
-        <input type="number" class="score-input" min="0" max="22" placeholder="0"
-               value="${p.score === '' ? '' : p.score}"
-               oninput="updateScore(${p.id}, this.value)">
-        <span class="score-suffix">/ 22</span>
-        <button class="remove-btn" onclick="removePlayer(${p.id})" title="Remove">×</button>
+    playerName = name;
+    currentQ = 0;
+    score = 0;
+    showScreen('quiz');
+    document.getElementById('quiz-player').textContent = `~ ${playerName} ~`;
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    answered = false;
+    const q = QUIZ[currentQ];
+    const total = QUIZ.length;
+
+    document.getElementById('quiz-progress').textContent = `Question ${currentQ + 1} / ${total}`;
+    document.getElementById('progress-fill').style.width = `${((currentQ) / total) * 100}%`;
+    document.getElementById('question-num').textContent = `Question ${currentQ + 1}`;
+    document.getElementById('question-text').textContent = q.question;
+    document.getElementById('feedback').innerHTML = '';
+
+    const grid = document.getElementById('options-grid');
+    grid.className = 'options-grid' + (q.type === 'tf' ? ' tf' : '');
+    grid.innerHTML = '';
+
+    if (q.type === 'tf') {
+      ['TRUE', 'FALSE'].forEach((label, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.dataset.color = i === 0 ? 'd' : 'a';
+        btn.dataset.index = i;
+        btn.innerHTML = `<span>${label}</span>`;
+        btn.onclick = () => selectAnswer(i);
+        grid.appendChild(btn);
+      });
+    } else {
+      const colors = ['a', 'b', 'c', 'd'];
+      const icons = ['▲', '◆', '●', '■'];
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.dataset.color = colors[i];
+        btn.dataset.index = i;
+        btn.innerHTML = `<span class="icon">${icons[i]}</span><span>${escapeHtml(opt)}</span>`;
+        btn.onclick = () => selectAnswer(i);
+        grid.appendChild(btn);
+      });
+    }
+  }
+
+  function selectAnswer(idx) {
+    if (answered) return;
+    answered = true;
+    const q = QUIZ[currentQ];
+    const buttons = document.querySelectorAll('.option-btn');
+    const isRight = idx === q.correct;
+
+    if (isRight) score++;
+
+    buttons.forEach(btn => {
+      btn.disabled = true;
+      const i = parseInt(btn.dataset.index);
+      if (i === q.correct) btn.classList.add('correct');
+      else if (i === idx) btn.classList.add('selected-wrong');
+      else btn.classList.add('wrong');
+    });
+
+    const feedback = document.getElementById('feedback');
+    feedback.innerHTML = `
+      <div class="feedback-text ${isRight ? 'right' : 'wrong'}">
+        ${isRight ? randomRightMsg() : randomWrongMsg()}
       </div>
-    `).join('');
+      <button class="btn next-btn" onclick="nextQuestion()">
+        ${currentQ === QUIZ.length - 1 ? 'See Results →' : 'Next →'}
+      </button>
+    `;
+
+    document.getElementById('progress-fill').style.width = `${((currentQ + 1) / QUIZ.length) * 100}%`;
+  }
+
+  function randomRightMsg() {
+    const msgs = ['nailed it! 🎯', 'correct! ✨', 'yes!! 💖', 'you got it! 🌟', 'spot on! 🔥'];
+    return msgs[Math.floor(Math.random() * msgs.length)];
+  }
+  function randomWrongMsg() {
+    const msgs = ['nope! 😅', 'so close! 💔', 'not quite!', 'oof, wrong one!', 'better luck next!'];
+    return msgs[Math.floor(Math.random() * msgs.length)];
+  }
+
+  function nextQuestion() {
+    currentQ++;
+    if (currentQ >= QUIZ.length) {
+      finishQuiz();
+    } else {
+      renderQuestion();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  function finishQuiz() {
+    leaderboard.push({ name: playerName, score: score });
+    leaderboard.sort((a, b) => b.score - a.score);
+
+    document.getElementById('final-score').textContent = score;
+    document.querySelectorAll('.big-score .total').forEach(el => el.textContent = ` / ${QUIZ.length}`);
+    document.getElementById('verdict').textContent = getVerdict(score, QUIZ.length);
+
+    renderLeaderboard();
+    showScreen('results');
+
+    if (score >= QUIZ.length * 0.7) fireConfetti();
+    if (leaderboard.length > 0 && leaderboard[0].name === playerName && leaderboard[0].score === score && score > 0) {
+      setTimeout(fireConfetti, 200);
+    }
+  }
+
+  function getVerdict(s, total) {
+    const pct = s / total;
+    if (pct === 1) return "perfect score — you ARE Tate 🏆";
+    if (pct >= 0.85) return "you know Tate inside out 💖";
+    if (pct >= 0.7) return "best friend material ✨";
+    if (pct >= 0.5) return "decent effort, keep studying 📚";
+    if (pct >= 0.3) return "you barely know her 😅";
+    return "are you sure you know Tate? 💀";
+  }
+
+  function renderLeaderboard() {
+    const lb = document.getElementById('leaderboard-list');
+    if (leaderboard.length === 0) {
+      lb.innerHTML = '<div class="empty-leader">no scores yet!</div>';
+      return;
+    }
+    const topScore = leaderboard[0].score;
+    const medals = ['🏆', '🥈', '🥉'];
+    let marked = false;
+    lb.innerHTML = leaderboard.map((p, i) => {
+      const isYou = !marked && p.name === playerName && p.score === score;
+      if (isYou) marked = true;
+      const medal = p.score === topScore ? '🏆' : (medals[i] || '');
+      return `
+        <div class="leader-row${isYou ? ' you' : ''}">
+          <span class="leader-rank">${i + 1}</span>
+          <span class="leader-name">${escapeHtml(p.name)}${isYou ? ' (you)' : ''}</span>
+          <span class="leader-medal">${medal}</span>
+          <span class="leader-score">${p.score} / ${QUIZ.length}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function clearLeaderboard() {
+    if (!confirm('Clear all scores from the leaderboard?')) return;
+    leaderboard = [];
+    renderLeaderboard();
+  }
+
+  function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+  }
+
+  function playAgain() {
+    document.getElementById('player-name').value = '';
+    showScreen('start');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => document.getElementById('player-name').focus(), 200);
   }
 
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
-  // ============== REVEAL ==============
-  function reveal() {
-    const valid = players.filter(p => p.name.trim() && p.score !== '' && !isNaN(p.score));
-    if (valid.length === 0) {
-      alert('Add at least one player with a name and score!');
-      return;
-    }
-
-    const sorted = [...valid].sort((a, b) => b.score - a.score);
-    const topScore = sorted[0].score;
-    const winners = sorted.filter(p => p.score === topScore);
-
-    const winnerSection = document.getElementById('winner-section');
-    const winnerName = document.getElementById('winner-name');
-    const winnerScore = document.getElementById('winner-score');
-    const tieMsg = document.getElementById('tie-msg');
-
-    if (winners.length === 1) {
-      winnerName.textContent = winners[0].name;
-      tieMsg.innerHTML = '';
-    } else {
-      winnerName.textContent = winners.map(w => w.name).join(' & ');
-      tieMsg.innerHTML = `<div class="tie-msg">it's a ${winners.length}-way tie! 🤝</div>`;
-    }
-    winnerScore.textContent = topScore;
-
-    // leaderboard
-    const lb = document.getElementById('leaderboard-list');
-    const medals = ['🥇', '🥈', '🥉'];
-    lb.innerHTML = sorted.map((p, i) => {
-      const isWinner = p.score === topScore;
-      const medal = isWinner ? '🏆' : (medals[i] || '');
-      return `
-        <div class="leader-row" style="animation-delay: ${i * 0.1}s">
-          <span class="leader-rank">${i + 1}</span>
-          <span class="leader-name">${escapeHtml(p.name)}</span>
-          <span class="leader-medal">${medal}</span>
-          <span class="leader-score">${p.score} / 22</span>
-        </div>
-      `;
-    }).join('');
-
-    winnerSection.classList.add('show');
-    winnerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    fireConfetti();
-  }
-
-  function resetAll() {
-    if (!confirm('Clear all players and start over?')) return;
-    players = [];
-    document.getElementById('winner-section').classList.remove('show');
-    addPlayer();
-    addPlayer();
-    addPlayer();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  // ============== CONFETTI ==============
+  // Confetti
   const canvas = document.getElementById('confetti-canvas');
   const ctx = canvas.getContext('2d');
   let confettiPieces = [];
@@ -650,8 +878,8 @@
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  const confettiColors = ['#ff4d8d', '#ffc94d', '#4dd4c4', '#a855f7', '#ff5757', '#fdf6e8'];
-  const confettiShapes = ['square', 'circle', 'triangle', 'star'];
+  const cfColors = ['#ff4d8d', '#ffc94d', '#4dd4c4', '#a855f7', '#ff5757', '#fdf6e8'];
+  const cfShapes = ['square', 'circle', 'triangle', 'star'];
 
   function fireConfetti() {
     const count = 180;
@@ -662,8 +890,8 @@
         vx: (Math.random() - 0.5) * 6,
         vy: Math.random() * 4 + 3,
         size: Math.random() * 8 + 6,
-        color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
-        shape: confettiShapes[Math.floor(Math.random() * confettiShapes.length)],
+        color: cfColors[Math.floor(Math.random() * cfColors.length)],
+        shape: cfShapes[Math.floor(Math.random() * cfShapes.length)],
         rotation: Math.random() * Math.PI * 2,
         rotationSpeed: (Math.random() - 0.5) * 0.2,
         life: 1
@@ -678,36 +906,21 @@
     ctx.rotate(p.rotation);
     ctx.fillStyle = p.color;
     ctx.globalAlpha = p.life;
-
     switch (p.shape) {
-      case 'square':
-        ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
-        break;
-      case 'circle':
-        ctx.beginPath();
-        ctx.arc(0, 0, p.size/2, 0, Math.PI * 2);
-        ctx.fill();
-        break;
+      case 'square': ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size); break;
+      case 'circle': ctx.beginPath(); ctx.arc(0, 0, p.size/2, 0, Math.PI * 2); ctx.fill(); break;
       case 'triangle':
         ctx.beginPath();
-        ctx.moveTo(0, -p.size/2);
-        ctx.lineTo(p.size/2, p.size/2);
-        ctx.lineTo(-p.size/2, p.size/2);
-        ctx.closePath();
-        ctx.fill();
-        break;
+        ctx.moveTo(0, -p.size/2); ctx.lineTo(p.size/2, p.size/2); ctx.lineTo(-p.size/2, p.size/2);
+        ctx.closePath(); ctx.fill(); break;
       case 'star':
         ctx.beginPath();
         for (let i = 0; i < 5; i++) {
-          const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
-          const x = Math.cos(angle) * p.size/2;
-          const y = Math.sin(angle) * p.size/2;
-          if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
+          const a = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+          const x = Math.cos(a) * p.size/2; const y = Math.sin(a) * p.size/2;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
-        ctx.closePath();
-        ctx.fill();
-        break;
+        ctx.closePath(); ctx.fill(); break;
     }
     ctx.restore();
   }
@@ -715,27 +928,20 @@
   function animateConfetti() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     confettiPieces = confettiPieces.filter(p => {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.12; // gravity
-      p.vx *= 0.99;
-      p.rotation += p.rotationSpeed;
+      p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.vx *= 0.99; p.rotation += p.rotationSpeed;
       if (p.y > canvas.height + 50) p.life -= 0.05;
       drawShape(p);
       return p.life > 0;
     });
-
-    if (confettiPieces.length > 0) {
-      requestAnimationFrame(animateConfetti);
-    } else {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+    if (confettiPieces.length > 0) requestAnimationFrame(animateConfetti);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
-  // ============== INIT ==============
-  addPlayer();
-  addPlayer();
-  addPlayer();
+  // Set total score display
+  document.querySelectorAll('.big-score .total').forEach(el => el.textContent = ` / ${QUIZ.length}`);
+  document.getElementById('quiz-progress').textContent = `Question 1 / ${QUIZ.length}`;
+
+  document.getElementById('player-name').focus();
 </script>
 
 </body>
