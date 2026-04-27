@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Quiz · Who Knows Me Best?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a0d1f;
+    --bg-2: #2d1438;
+    --paper: #fdf6e8;
+    --ink: #2a1810;
+    --pink: #ff4d8d;
+    --gold: #ffc94d;
+    --teal: #4dd4c4;
+    --purple: #a855f7;
+    --red: #ff5757;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 20% 10%, #ff4d8d33 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, #a855f733 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, #ffc94d11 0%, transparent 70%);
+    color: var(--paper);
+    font-family: 'Fraunces', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Floating background sparkles */
+  .bg-sparkle {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0.4;
+    font-size: 24px;
+    animation: float 8s ease-in-out infinite;
+  }
+  .bg-sparkle:nth-child(1) { top: 10%; left: 5%; color: var(--gold); animation-delay: 0s; }
+  .bg-sparkle:nth-child(2) { top: 25%; right: 8%; color: var(--pink); animation-delay: 1s; }
+  .bg-sparkle:nth-child(3) { top: 60%; left: 10%; color: var(--teal); animation-delay: 2s; }
+  .bg-sparkle:nth-child(4) { top: 75%; right: 5%; color: var(--purple); animation-delay: 3s; }
+  .bg-sparkle:nth-child(5) { top: 40%; left: 50%; color: var(--gold); animation-delay: 4s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ============== HEADER ============== */
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .eyebrow::before, .eyebrow::after {
+    content: '✦';
+    margin: 0 10px;
+    color: var(--pink);
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: clamp(48px, 9vw, 88px);
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+  }
+
+  h1 .highlight {
+    color: var(--pink);
+    font-style: normal;
+    display: inline-block;
+    transform: rotate(-3deg);
+    text-shadow: 4px 4px 0 var(--gold);
+  }
+
+  .subtitle {
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    margin-top: 16px;
+    color: var(--paper);
+    opacity: 0.85;
+  }
+
+  /* ============== CARD ============== */
+  .card {
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 24px;
+    padding: 32px 28px;
+    margin-bottom: 20px;
+    box-shadow:
+      0 0 0 4px var(--ink),
+      8px 8px 0 0 var(--pink),
+      16px 16px 0 0 var(--gold);
+    position: relative;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px dashed var(--ink);
+  }
+
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 28px;
+  }
+
+  .card-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+
+  /* ============== INPUTS ============== */
+  .player-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background: #fff5;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+
+  .player-row:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  .player-num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--pink);
+    min-width: 28px;
+  }
+
+  .name-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    color: var(--ink);
+    outline: none;
+    border-bottom: 2px solid transparent;
+    padding: 4px 0;
+  }
+
+  .name-input:focus {
+    border-bottom-color: var(--pink);
+  }
+
+  .name-input::placeholder {
+    color: #2a181066;
+    font-style: italic;
+  }
+
+  .score-input {
+    width: 72px;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    background: var(--paper);
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    text-align: center;
+    padding: 6px;
+    outline: none;
+  }
+
+  .score-input:focus {
+    background: var(--gold);
+  }
+
+  .score-suffix {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--ink);
+    opacity: 0.6;
+  }
+
+  .remove-btn {
+    border: none;
+    background: transparent;
+    color: var(--red);
+    font-size: 22px;
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+
+  .remove-btn:hover {
+    background: var(--red);
+    color: var(--paper);
+    transform: rotate(90deg);
+  }
+
+  /* ============== BUTTONS ============== */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 500;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  .btn:active {
+    transform: translate(0, 0);
+    box-shadow: 0 0 0 var(--ink);
+  }
+
+  .btn-add { background: var(--teal); }
+  .btn-reveal {
+    background: var(--pink);
+    color: var(--paper);
+    flex: 1;
+    font-size: 16px;
+    padding: 16px 24px;
+  }
+  .btn-reset {
+    background: transparent;
+    color: var(--paper);
+    border-color: var(--paper);
+  }
+  .btn-reset:hover {
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 4px 4px 0 var(--pink);
+  }
+
+  /* ============== WINNER REVEAL ============== */
+  .winner-section {
+    display: none;
+    margin-top: 40px;
+    text-align: center;
+    animation: dropIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .winner-section.show { display: block; }
+
+  @keyframes dropIn {
+    0% { opacity: 0; transform: translateY(-40px) scale(0.9); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .winner-eyebrow {
+    font-family: 'Caveat', cursive;
+    font-size: 32px;
+    color: var(--gold);
+    margin-bottom: 8px;
+    transform: rotate(-2deg);
+    display: inline-block;
+  }
+
+  .winner-name {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: clamp(56px, 12vw, 120px);
+    line-height: 0.95;
+    color: var(--paper);
+    text-shadow:
+      4px 4px 0 var(--pink),
+      8px 8px 0 var(--purple);
+    margin: 16px 0;
+    word-break: break-word;
+    animation: wiggle 2s ease-in-out infinite;
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-1deg); }
+    50% { transform: rotate(1deg); }
+  }
+
+  .winner-score {
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+  }
+
+  .winner-score .big {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 48px;
+    color: var(--paper);
+    text-transform: none;
+    letter-spacing: 0;
+    display: inline-block;
+    margin: 0 6px;
+  }
+
+  /* ============== LEADERBOARD ============== */
+  .leaderboard {
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 24px;
+    padding: 24px;
+    text-align: left;
+    box-shadow: 0 0 0 4px var(--ink), 8px 8px 0 var(--gold);
+  }
+
+  .leaderboard-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 22px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .leader-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px;
+    border-bottom: 1px dashed #2a181030;
+    animation: slideIn 0.5s ease-out backwards;
+  }
+
+  @keyframes slideIn {
+    0% { opacity: 0; transform: translateX(-20px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+
+  .leader-rank {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 28px;
+    min-width: 36px;
+    color: var(--ink);
+  }
+
+  .leader-row:nth-child(2) .leader-rank { color: var(--pink); font-size: 36px; }
+  .leader-row:nth-child(3) .leader-rank { color: var(--gold); }
+  .leader-row:nth-child(4) .leader-rank { color: var(--teal); }
+
+  .leader-name {
+    flex: 1;
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .leader-score {
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    font-weight: 500;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .leader-medal {
+    font-size: 24px;
+  }
+
+  /* ============== CONFETTI ============== */
+  #confetti-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* ============== TIE MESSAGE ============== */
+  .tie-msg {
+    font-family: 'Caveat', cursive;
+    font-size: 28px;
+    color: var(--gold);
+    margin-top: 16px;
+  }
+
+  /* ============== EMPTY STATE ============== */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink);
+    opacity: 0.5;
+    font-style: italic;
+    font-size: 18px;
+  }
+
+  /* ============== FOOTER ============== */
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+  footer span { color: var(--pink); }
+</style>
+</head>
+<body>
+
+<span class="bg-sparkle">✦</span>
+<span class="bg-sparkle">✿</span>
+<span class="bg-sparkle">★</span>
+<span class="bg-sparkle">❋</span>
+<span class="bg-sparkle">✺</span>
+
+<canvas id="confetti-canvas"></canvas>
+
+<div class="container">
+
+  <header>
+    <div class="eyebrow">Birthday Edition</div>
+    <h1>who knows<br><span class="highlight">me best?</span></h1>
+    <div class="subtitle">~ score the quiz, crown the champion ~</div>
+  </header>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Players & Scores</div>
+      <div class="card-badge">Max 22 pts</div>
+    </div>
+    <div id="players"></div>
+    <div class="btn-row">
+      <button class="btn btn-add" onclick="addPlayer()">+ Add Player</button>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-reveal" onclick="reveal()">🎉 Reveal the Winner</button>
+    <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+  </div>
+
+  <div class="winner-section" id="winner-section">
+    <div class="winner-eyebrow">and the winner is...</div>
+    <div class="winner-name" id="winner-name">—</div>
+    <div class="winner-score">with <span class="big" id="winner-score">0</span> out of 22 points!</div>
+    <div id="tie-msg"></div>
+
+    <div class="leaderboard">
+      <div class="leaderboard-title">★ Final Leaderboard ★</div>
+      <div id="leaderboard-list"></div>
+    </div>
+  </div>
+
+  <footer>
+    Made with <span>♥</span> for a special birthday
+  </footer>
+
+</div>
+
+<script>
+  // ============== STATE ==============
+  let players = [];
+  let nextId = 1;
+
+  // ============== PLAYER MANAGEMENT ==============
+  function addPlayer(name = '', score = '') {
+    const id = nextId++;
+    players.push({ id, name, score });
+    render();
+    // focus the new name input
+    setTimeout(() => {
+      const inputs = document.querySelectorAll('.name-input');
+      if (inputs.length) inputs[inputs.length - 1].focus();
+    }, 50);
+  }
+
+  function removePlayer(id) {
+    players = players.filter(p => p.id !== id);
+    render();
+  }
+
+  function updateName(id, value) {
+    const p = players.find(p => p.id === id);
+    if (p) p.name = value;
+  }
+
+  function updateScore(id, value) {
+    const p = players.find(p => p.id === id);
+    if (p) {
+      // clamp 0-22
+      let n = parseInt(value, 10);
+      if (isNaN(n)) n = '';
+      else n = Math.max(0, Math.min(22, n));
+      p.score = n;
+    }
+  }
+
+  function render() {
+    const container = document.getElementById('players');
+    if (players.length === 0) {
+      container.innerHTML = '<div class="empty-state">add your first player below ↓</div>';
+      return;
+    }
+    container.innerHTML = players.map((p, i) => `
+      <div class="player-row">
+        <span class="player-num">${i + 1}.</span>
+        <input type="text" class="name-input" placeholder="player name..."
+               value="${escapeHtml(p.name)}"
+               oninput="updateName(${p.id}, this.value)">
+        <input type="number" class="score-input" min="0" max="22" placeholder="0"
+               value="${p.score === '' ? '' : p.score}"
+               oninput="updateScore(${p.id}, this.value)">
+        <span class="score-suffix">/ 22</span>
+        <button class="remove-btn" onclick="removePlayer(${p.id})" title="Remove">×</button>
+      </div>
+    `).join('');
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // ============== REVEAL ==============
+  function reveal() {
+    const valid = players.filter(p => p.name.trim() && p.score !== '' && !isNaN(p.score));
+    if (valid.length === 0) {
+      alert('Add at least one player with a name and score!');
+      return;
+    }
+
+    const sorted = [...valid].sort((a, b) => b.score - a.score);
+    const topScore = sorted[0].score;
+    const winners = sorted.filter(p => p.score === topScore);
+
+    const winnerSection = document.getElementById('winner-section');
+    const winnerName = document.getElementById('winner-name');
+    const winnerScore = document.getElementById('winner-score');
+    const tieMsg = document.getElementById('tie-msg');
+
+    if (winners.length === 1) {
+      winnerName.textContent = winners[0].name;
+      tieMsg.innerHTML = '';
+    } else {
+      winnerName.textContent = winners.map(w => w.name).join(' & ');
+      tieMsg.innerHTML = `<div class="tie-msg">it's a ${winners.length}-way tie! 🤝</div>`;
+    }
+    winnerScore.textContent = topScore;
+
+    // leaderboard
+    const lb = document.getElementById('leaderboard-list');
+    const medals = ['🥇', '🥈', '🥉'];
+    lb.innerHTML = sorted.map((p, i) => {
+      const isWinner = p.score === topScore;
+      const medal = isWinner ? '🏆' : (medals[i] || '');
+      return `
+        <div class="leader-row" style="animation-delay: ${i * 0.1}s">
+          <span class="leader-rank">${i + 1}</span>
+          <span class="leader-name">${escapeHtml(p.name)}</span>
+          <span class="leader-medal">${medal}</span>
+          <span class="leader-score">${p.score} / 22</span>
+        </div>
+      `;
+    }).join('');
+
+    winnerSection.classList.add('show');
+    winnerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    fireConfetti();
+  }
+
+  function resetAll() {
+    if (!confirm('Clear all players and start over?')) return;
+    players = [];
+    document.getElementById('winner-section').classList.remove('show');
+    addPlayer();
+    addPlayer();
+    addPlayer();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ============== CONFETTI ==============
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  let confettiPieces = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  const confettiColors = ['#ff4d8d', '#ffc94d', '#4dd4c4', '#a855f7', '#ff5757', '#fdf6e8'];
+  const confettiShapes = ['square', 'circle', 'triangle', 'star'];
+
+  function fireConfetti() {
+    const count = 180;
+    for (let i = 0; i < count; i++) {
+      confettiPieces.push({
+        x: Math.random() * canvas.width,
+        y: -20 - Math.random() * canvas.height * 0.5,
+        vx: (Math.random() - 0.5) * 6,
+        vy: Math.random() * 4 + 3,
+        size: Math.random() * 8 + 6,
+        color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+        shape: confettiShapes[Math.floor(Math.random() * confettiShapes.length)],
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.2,
+        life: 1
+      });
+    }
+    if (confettiPieces.length === count) animateConfetti();
+  }
+
+  function drawShape(p) {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rotation);
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = p.life;
+
+    switch (p.shape) {
+      case 'square':
+        ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+        break;
+      case 'circle':
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size/2, 0, Math.PI * 2);
+        ctx.fill();
+        break;
+      case 'triangle':
+        ctx.beginPath();
+        ctx.moveTo(0, -p.size/2);
+        ctx.lineTo(p.size/2, p.size/2);
+        ctx.lineTo(-p.size/2, p.size/2);
+        ctx.closePath();
+        ctx.fill();
+        break;
+      case 'star':
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+          const x = Math.cos(angle) * p.size/2;
+          const y = Math.sin(angle) * p.size/2;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+        break;
+    }
+    ctx.restore();
+  }
+
+  function animateConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confettiPieces = confettiPieces.filter(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.12; // gravity
+      p.vx *= 0.99;
+      p.rotation += p.rotationSpeed;
+      if (p.y > canvas.height + 50) p.life -= 0.05;
+      drawShape(p);
+      return p.life > 0;
+    });
+
+    if (confettiPieces.length > 0) {
+      requestAnimationFrame(animateConfetti);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  // ============== INIT ==============
+  addPlayer();
+  addPlayer();
+  addPlayer();
+</script>
+
+</body>
+</html>
